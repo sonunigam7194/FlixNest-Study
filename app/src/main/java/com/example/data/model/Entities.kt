@@ -34,5 +34,6 @@ data class CourseProgressEntity(
     @PrimaryKey val courseId: String,
     val isEnrolled: Boolean,
     val isUnlocked: Boolean,
-    val currentProgressPercent: Float = 0.0f
+    val currentProgressPercent: Float = 0.0f,
+    val isFavorite: Boolean = false
 )

@@ -45,7 +45,11 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
         _searchQuery
     ) { courses, cat, query ->
         courses.filter { item ->
-            val matchesCategory = if (cat == "All") true else item.course.category.equals(cat, ignoreCase = true)
+            val matchesCategory = when (cat) {
+                "All" -> true
+                "Favorites" -> item.progress?.isFavorite == true
+                else -> item.course.category.equals(cat, ignoreCase = true)
+            }
             val matchesSearch = if (query.isEmpty()) true else {
                 item.course.title.contains(query, ignoreCase = true) ||
                         item.course.tagline.contains(query, ignoreCase = true) ||
@@ -71,6 +75,12 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun toggleFavorite(courseId: String) {
+        viewModelScope.launch {
+            repository.toggleFavorite(courseId)
+        }
     }
 
     fun enrollInCourse(courseId: String) {

@@ -30,7 +30,8 @@ class CourseRepository(private val courseDao: CourseDao) {
             courseId = courseId,
             isEnrolled = true,
             isUnlocked = existing?.isUnlocked ?: !isPremium,
-            currentProgressPercent = existing?.currentProgressPercent ?: 0.0f
+            currentProgressPercent = existing?.currentProgressPercent ?: 0.0f,
+            isFavorite = existing?.isFavorite ?: false
         )
         courseDao.saveCourseProgress(progress)
     }
@@ -41,8 +42,26 @@ class CourseRepository(private val courseDao: CourseDao) {
             courseId = courseId,
             isEnrolled = existing?.isEnrolled ?: false,
             isUnlocked = true,
-            currentProgressPercent = existing?.currentProgressPercent ?: 0.0f
+            currentProgressPercent = existing?.currentProgressPercent ?: 0.0f,
+            isFavorite = existing?.isFavorite ?: false
         )
+        courseDao.saveCourseProgress(progress)
+    }
+
+    suspend fun toggleFavorite(courseId: String) {
+        val existing = courseDao.getCourseProgress(courseId)
+        val isPremium = courseDao.getCourseById(courseId)?.isPremium ?: false
+        val progress = if (existing != null) {
+            existing.copy(isFavorite = !existing.isFavorite)
+        } else {
+            CourseProgressEntity(
+                courseId = courseId,
+                isEnrolled = false,
+                isUnlocked = !isPremium,
+                currentProgressPercent = 0.0f,
+                isFavorite = true
+            )
+        }
         courseDao.saveCourseProgress(progress)
     }
 

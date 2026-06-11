@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -98,6 +101,258 @@ fun CourseApp(viewModel: CourseViewModel) {
     }
 }
 
+data class MockCoachingCourse(
+    val id: String,
+    val title: String,
+    val category: String,
+    val difficulty: String, // "Beginner", "Intermediate", "Advanced"
+    val duration: String,
+    val rating: Double,
+    val tagline: String,
+    val instructor: String,
+    val description: String
+)
+
+val mockCoachingCourses = listOf(
+    MockCoachingCourse(
+        id = "mock_01",
+        title = "Unstoppable Decisiveness Routine",
+        category = "Mindset Shift",
+        difficulty = "Beginner",
+        duration = "2 Weeks",
+        rating = 4.8,
+        tagline = "Eradicate overthinking and build rapid action habits.",
+        instructor = "Coach Adrian Mercer",
+        description = "A powerful system designed to quiet the conscious mind and prompt swift, evidence-backed decision making under everyday pressure. Learn to conquer mental fatigue from the comfort of your living room."
+    ),
+    MockCoachingCourse(
+        id = "mock_02",
+        title = "Executive Presence Masterclass",
+        category = "Career Success",
+        difficulty = "Advanced",
+        duration = "4 Weeks",
+        rating = 4.9,
+        tagline = "Command respect, refine voice control & lead high-risk meetings.",
+        instructor = "Coach Diana Stone",
+        description = "Elite training on body pacing, verbal framing, and corporate diplomacy. Learn high-probability tactics to handle boardroom heat and project steady authority."
+    ),
+    MockCoachingCourse(
+        id = "mock_03",
+        title = "Compound Investing Mastery",
+        category = "Personal Growth",
+        difficulty = "Intermediate",
+        duration = "3 Weeks",
+        rating = 4.7,
+        tagline = "Build automation workflows for steady passive asset growth.",
+        instructor = "Coach Marcus Vance",
+        description = "Demystifying wealth accumulation without the Wall Street jargon. Automate asset placement using a clean mathematical blueprint that generates lasting peace of mind."
+    ),
+    MockCoachingCourse(
+        id = "mock_04",
+        title = "The Stress-Control Blueprint",
+        category = "Mindset Shift",
+        difficulty = "Intermediate",
+        duration = "3 Weeks",
+        rating = 4.6,
+        tagline = "Box breathing and mental frame control under intensive pressure.",
+        instructor = "Coach Sarah Connor",
+        description = "Biological systems to regulate cortisol production on demand. Harness deep somatic routines to remain calm, structured, and focused in chaotic environments."
+    ),
+    MockCoachingCourse(
+        id = "mock_05",
+        title = "High-Impact Product Presenter",
+        category = "Career Success",
+        difficulty = "Advanced",
+        duration = "4 Weeks",
+        rating = 4.9,
+        tagline = "Turn dry corporate metrics into cinematic, persuasive stories.",
+        instructor = "Coach Liam Sterling",
+        description = "The narrative roadmap of elite creators. Design speech arcs that capture immediate corporate attention and drive product alignment across stakeholders."
+    ),
+    MockCoachingCourse(
+        id = "mock_06",
+        title = "Home Mobility & Breathwork",
+        category = "Personal Growth",
+        difficulty = "Beginner",
+        duration = "2 Weeks",
+        rating = 4.5,
+        tagline = "Unpack body tension and restore daily energy from home.",
+        instructor = "Coach Sarah Connor",
+        description = "Lightweight somatic holding sequences paired with restorative flow breathing to completely reset physical and cognitive systems before deep sleep cycles."
+    ),
+    MockCoachingCourse(
+        id = "mock_07",
+        title = "Cognitive Flow Activation",
+        category = "Mindset Shift",
+        difficulty = "Advanced",
+        duration = "2 Weeks",
+        rating = 4.8,
+        tagline = "Unlock laser-focused working sprints of 90 minutes without distraction.",
+        instructor = "Coach Adrian Mercer",
+        description = "Configure your surrounding room cues, trigger environmental focus anchors, and leverage advanced brain scheduling states to execute elite engineering work."
+    ),
+    MockCoachingCourse(
+        id = "mock_08",
+        title = "Constructive Boardroom Negotiations",
+        category = "Career Success",
+        difficulty = "Intermediate",
+        duration = "1 Week",
+        rating = 4.7,
+        tagline = "Win high-stakes salary packages using zero-confrontation scripts.",
+        instructor = "Coach Liam Sterling",
+        description = "Actionable corporate scripts to establish baseline numbers, trigger cooperative proposals, and secure custom training or flexibility benefits effortlessly."
+    )
+)
+
+@Composable
+fun CoachingCourseGridItem(
+    course: MockCoachingCourse,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .shadow(elevation = 1.dp, shape = RoundedCornerShape(16.dp))
+            .testTag("mock_course_card_${course.id}"),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, Slate200)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp)
+        ) {
+            // Top tag row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Category Tag
+                Box(
+                    modifier = Modifier
+                        .background(PrimaryIndigo.copy(alpha = 0.08f), RoundedCornerShape(6.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = course.category.uppercase(),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 9.sp,
+                        color = PrimaryIndigo,
+                        letterSpacing = 0.5.sp
+                    )
+                }
+
+                // Difficulty Badge
+                val difficultyColor = when (course.difficulty.lowercase()) {
+                    "beginner" -> Color(0xFF2E7D32)
+                    "intermediate" -> Color(0xFFD97706)
+                    "advanced" -> Color(0xFFD81B60)
+                    else -> Slate500
+                }
+                val difficultyBg = when (course.difficulty.lowercase()) {
+                    "beginner" -> Color(0xFFE8F5E9)
+                    "intermediate" -> Color(0xFFFEF3C7)
+                    "advanced" -> Color(0xFFFCE4EC)
+                    else -> Slate100
+                }
+
+                Box(
+                    modifier = Modifier
+                        .background(difficultyBg, RoundedCornerShape(6.dp))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = course.difficulty.uppercase(),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 9.sp,
+                        color = difficultyColor,
+                        letterSpacing = 0.5.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Course Title
+            Text(
+                text = course.title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = Slate900,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 18.sp,
+                modifier = Modifier.heightIn(min = 36.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Course Tagline / Short description
+            Text(
+                text = course.tagline,
+                fontSize = 11.sp,
+                color = Slate500,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 15.sp,
+                modifier = Modifier.heightIn(min = 30.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            HorizontalDivider(color = Slate100)
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Footer with rating/duration
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Duration
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.AccessTime,
+                        contentDescription = "Duration",
+                        tint = Slate400,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = course.duration,
+                        fontSize = 11.sp,
+                        color = Slate500,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // Rating
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Star,
+                        contentDescription = "Rating",
+                        tint = AccentGold,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = course.rating.toString(),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Slate800
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun CourseListScreen(
     viewModel: CourseViewModel,
@@ -107,7 +362,30 @@ fun CourseListScreen(
     val selectedCat by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     
-    val categories = listOf("All", "Personal Growth", "Career Success", "Mindset Shift")
+    val categories = listOf("All", "Favorites", "Personal Growth", "Career Success", "Mindset Shift")
+    var viewMode by remember { mutableStateOf("grid") } // Default to "grid" so the display grid is prominent upon launch
+    var selectedMockCourse by remember { mutableStateOf<MockCoachingCourse?>(null) }
+
+    // Filter mock coaching courses by category and search keyword matches in titles and descriptions
+    val filteredMockCourses = remember(selectedCat, searchQuery) {
+        mockCoachingCourses.filter { course ->
+            val matchesCategory = if (selectedCat == "All" || selectedCat == "Favorites") {
+                true 
+            } else {
+                course.category.equals(selectedCat, ignoreCase = true)
+            }
+            val matchesSearch = if (searchQuery.isEmpty()) {
+                true
+            } else {
+                course.title.contains(searchQuery, ignoreCase = true) ||
+                        course.tagline.contains(searchQuery, ignoreCase = true) ||
+                        course.description.contains(searchQuery, ignoreCase = true) ||
+                        course.category.contains(searchQuery, ignoreCase = true) ||
+                        course.difficulty.contains(searchQuery, ignoreCase = true)
+            }
+            matchesCategory && matchesSearch
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -118,7 +396,7 @@ fun CourseListScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Polished MD3 sleek Search bar
+        // Polished MD3 Sleek Search bar
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { viewModel.setSearchQuery(it) },
@@ -126,7 +404,7 @@ fun CourseListScreen(
                 .fillMaxWidth()
                 .testTag("search_input")
                 .shadow(elevation = 1.dp, shape = RoundedCornerShape(16.dp)),
-            placeholder = { Text("Search classes & strategies...", color = Slate500) },
+            placeholder = { Text("Search classes, targets & metrics...", color = Slate500) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon", tint = PrimaryIndigo) },
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
@@ -180,12 +458,25 @@ fun CourseListScreen(
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .testTag("category_$category")
                     ) {
-                        Text(
-                            text = category,
-                            fontSize = 14.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                            color = contentColor
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            if (category == "Favorites") {
+                                Icon(
+                                    imageVector = Icons.Filled.Favorite,
+                                    contentDescription = null,
+                                    tint = if (isSelected) Color(0xFFE53935) else Slate400,
+                                    modifier = Modifier.size(14.dp).padding(end = 4.dp)
+                                )
+                            }
+                            Text(
+                                text = category,
+                                fontSize = 14.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                color = contentColor
+                            )
+                        }
                     }
                 }
             }
@@ -193,71 +484,315 @@ fun CourseListScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Dynamic Badge Headers based on active search
+        // Dynamic Badge Headers based on active search & Layout Toggler
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = if (selectedCat == "All") "Mastery Series" else "$selectedCat Core",
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 18.sp,
-                color = Slate900
-            )
-            Text(
-                text = if (selectedCat == "All") "Premium & Free paths" else "Syllabus modules",
-                fontWeight = FontWeight.Bold,
-                fontSize = 11.sp,
-                color = Slate500,
-                letterSpacing = 0.5.sp
-            )
+            Column {
+                Text(
+                    text = if (viewMode == "grid") "Course Explorer" else (if (selectedCat == "All") "Mastery Series" else "$selectedCat Core"),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 18.sp,
+                    color = Slate900
+                )
+                Text(
+                    text = if (viewMode == "grid") "Coaching Matrix Grid" else "Local Practice Roadmap",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp,
+                    color = Slate500,
+                    letterSpacing = 0.5.sp
+                )
+            }
+
+            // View Mode selector segment tab
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = Slate100,
+                border = BorderStroke(1.dp, Slate200)
+            ) {
+                Row(modifier = Modifier.padding(2.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (viewMode == "grid") PrimaryIndigo else Color.Transparent)
+                            .clickable { viewMode = "grid" }
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                            .testTag("view_mode_grid")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.GridView,
+                            contentDescription = "Grid Layout",
+                            tint = if (viewMode == "grid") Color.White else Slate500,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (viewMode == "list") PrimaryIndigo else Color.Transparent)
+                            .clickable { viewMode = "list" }
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                            .testTag("view_mode_list")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.List,
+                            contentDescription = "List Layout",
+                            tint = if (viewMode == "list") Color.White else Slate500,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-        if (courses.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+        // Toggle layout
+        if (viewMode == "grid") {
+            // DISPLAY GRID COMPONENT of Adaptive Coaching Courses
+            if (filteredMockCourses.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Default.School,
-                        contentDescription = "No courses found",
-                        modifier = Modifier.size(64.dp),
-                        tint = Slate300
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        "No direct training aligns with your query.",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Slate500,
-                        textAlign = TextAlign.Center
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Default.GridView,
+                            contentDescription = "No grid courses found",
+                            modifier = Modifier.size(64.dp),
+                            tint = Slate300
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "No coaching courses align with your query.",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Slate500,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 150.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 16.dp)
+                ) {
+                    items(filteredMockCourses) { courseElement ->
+                        CoachingCourseGridItem(
+                            course = courseElement,
+                            onClick = { selectedMockCourse = courseElement }
+                        )
+                    }
                 }
             }
         } else {
-            LazyColumn(
+            // DATABASE LIST ROADMAP
+            if (courses.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            if (selectedCat == "Favorites") Icons.Default.FavoriteBorder else Icons.Default.School,
+                            contentDescription = "No courses found",
+                            modifier = Modifier.size(64.dp),
+                            tint = Slate300
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            if (selectedCat == "Favorites") "Your favorites chest is currently empty.\nBookmark elite paradigms using the heart icon on any card!" else "No direct training aligns with your query.",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Slate500,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(courses) { courseWithProg ->
+                        CourseCard(
+                            course = courseWithProg.course,
+                            percentComplete = courseWithProg.progress?.currentProgressPercent ?: 0f,
+                            isEnrolled = courseWithProg.progress?.isEnrolled ?: false,
+                            isUnlocked = courseWithProg.progress?.isUnlocked ?: false,
+                            isFavorite = courseWithProg.progress?.isFavorite ?: false,
+                            onFavoriteToggle = { viewModel.toggleFavorite(courseWithProg.course.id) },
+                            onClick = { onNavigateToDetails(courseWithProg.course.id) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // Modal Sheet of Details about Mock course
+    if (selectedMockCourse != null) {
+        val course = selectedMockCourse!!
+        
+        Dialog(onDismissRequest = { selectedMockCourse = null }) {
+            Card(
+                shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(vertical = 24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, Slate200)
             ) {
-                items(courses) { courseWithProg ->
-                    CourseCard(
-                        course = courseWithProg.course,
-                        percentComplete = courseWithProg.progress?.currentProgressPercent ?: 0f,
-                        isEnrolled = courseWithProg.progress?.isEnrolled ?: false,
-                        isUnlocked = courseWithProg.progress?.isUnlocked ?: false,
-                        onClick = { onNavigateToDetails(courseWithProg.course.id) }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            // Difficulty Tag
+                            val difficultyColor = when (course.difficulty.lowercase()) {
+                                "beginner" -> Color(0xFF2E7D32)
+                                "intermediate" -> Color(0xFFD97706)
+                                "advanced" -> Color(0xFFD81B60)
+                                else -> Slate500
+                            }
+                            val difficultyBg = when (course.difficulty.lowercase()) {
+                                "beginner" -> Color(0xFFE8F5E9)
+                                "intermediate" -> Color(0xFFFEF3C7)
+                                "advanced" -> Color(0xFFFCE4EC)
+                                else -> Slate100
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(difficultyBg, RoundedCornerShape(6.dp))
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = course.difficulty.uppercase(),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        color = difficultyColor
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .background(PrimaryIndigo.copy(alpha = 0.08f), RoundedCornerShape(6.dp))
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = course.category,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        color = PrimaryIndigo
+                                    )
+                                }
+                            }
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+                            
+                            Text(
+                                text = course.title,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Slate900,
+                                lineHeight = 26.sp
+                            )
+                        }
+                        
+                        IconButton(
+                            onClick = { selectedMockCourse = null },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(Icons.Default.Close, contentDescription = "Close dialogue", tint = Slate500)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "ABOUT THIS SKILLPATH",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 11.sp,
+                        color = Slate400,
+                        letterSpacing = 0.5.sp
                     )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = course.description,
+                        fontSize = 14.sp,
+                        color = Slate600,
+                        lineHeight = 20.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text("INSTRUCTOR", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Slate400)
+                            Text(course.instructor, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Slate800)
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text("DURATION", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Slate400)
+                            Text(course.duration, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Slate800)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { selectedMockCourse = null },
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryIndigo),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text("Close Explorer", fontWeight = FontWeight.Bold, color = Color.White)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = "Initialize Practice",
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -329,6 +864,8 @@ fun CourseCard(
     percentComplete: Float,
     isEnrolled: Boolean,
     isUnlocked: Boolean,
+    isFavorite: Boolean,
+    onFavoriteToggle: () -> Unit,
     onClick: () -> Unit
 ) {
     val progressFraction = percentComplete / 100f
@@ -384,44 +921,69 @@ fun CourseCard(
                     )
                 }
 
-                // Pricing Badge
-                if (course.isPremium) {
-                    Box(
-                        modifier = Modifier
-                            .background(AccentGold.copy(alpha = 0.15f), RoundedCornerShape(8.dp))
-                            .border(1.dp, AccentGold, RoundedCornerShape(8.dp))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.WorkspacePremium,
-                                contentDescription = "Premium logo",
-                                tint = AccentGold,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Pricing Badge
+                    if (course.isPremium) {
+                        Box(
+                            modifier = Modifier
+                                .background(AccentGold.copy(alpha = 0.15f), RoundedCornerShape(8.dp))
+                                .border(1.dp, AccentGold, RoundedCornerShape(8.dp))
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.WorkspacePremium,
+                                    contentDescription = "Premium logo",
+                                    tint = AccentGold,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "PREMIUM ($${course.price})",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.sp,
+                                    color = AccentGold,
+                                    letterSpacing = 0.5.sp
+                                )
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFF2E7D32).copy(alpha = 0.12f), RoundedCornerShape(8.dp))
+                                .border(1.dp, Color(0xFF2E7D32), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
                             Text(
-                                text = "PREMIUM ($${course.price})",
+                                text = "FREE PATH",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 10.sp,
-                                color = AccentGold,
+                                color = Color(0xFF2E7D32),
                                 letterSpacing = 0.5.sp
                             )
                         }
                     }
-                } else {
-                    Box(
+
+                    // Bookmark Favorite heart icon button
+                    IconButton(
+                        onClick = onFavoriteToggle,
                         modifier = Modifier
-                            .background(Color(0xFF2E7D32).copy(alpha = 0.12f), RoundedCornerShape(8.dp))
-                            .border(1.dp, Color(0xFF2E7D32), RoundedCornerShape(8.dp))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .size(36.dp)
+                            .testTag("favorite_button_${course.id}")
                     ) {
-                        Text(
-                            text = "FREE PATH",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            color = Color(0xFF2E7D32),
-                            letterSpacing = 0.5.sp
+                        val tint = if (isFavorite) {
+                            if (course.isPremium) AccentGold else Color(0xFFE53935)
+                        } else {
+                            if (course.isPremium) Slate400 else Slate400
+                        }
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = tint,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
