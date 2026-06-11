@@ -1,0 +1,6 @@
+{
+  "name": "CouchCoach",
+  "description": "Unlock premium and free coaching courses for personal growth, career success, and mindset shift right from your couch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
